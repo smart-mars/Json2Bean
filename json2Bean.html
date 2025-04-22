@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Json To Java Bean</title>
+    </head>
+    <script>
+        function transformStr3(str) {
+            if (!str) {
+                return str;
+            }
+            if (str.indexOf('_') == -1 && /(?=.*?[a-z])(?=.*?[A-Z])/.test(str)) {
+                return str;
+            }
+            var re=/_(\w)/g;
+            return str.toLowerCase().replace(re,function ($0,$1) {
+                return $1.toUpperCase();
+            });
+        }
+        function gen() {
+            console.log(document.getElementById('jsonStr').value);
+            let jsonStr = document.getElementById('jsonStr').value;
+            if (!jsonStr) {
+                console.log('请输入值');
+                return;
+            }
+            let data = JSON.parse(jsonStr);
+            let result = "@Data\n"
+                + "public class MyBean {\n";
+            for (let key in data) {
+                result += "    /**\n" 
+                + "    * " + data[key] + "\n" 
+                + "    */\n"
+                + "    @JSONField(name = \""+ key +"\")\n"
+                + "    private String " + transformStr3(key) + ";\n"
+            }
+
+            result += "}"
+
+            document.getElementById('javaBean').value = result;
+        }
+    </script>
+
+    <body>
+        <div style="margin:20px; text-align:center;">
+            <p>json: <textarea id="jsonStr" rows="20" cols="100"></textarea></p>
+            <input type="button" value="生成" onclick="gen()" />
+        </div>
+        <div style="margin:20px; text-align:center;">
+            <br/>
+            <p>*********************************</p>
+            <br/>
+            <textarea id="javaBean"  rows="200" cols="300">这里复制</textarea>
+        </div>
+    </body>
+</html>
